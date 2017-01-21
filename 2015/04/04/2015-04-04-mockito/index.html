@@ -1,0 +1,134 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Mockito | Hexo</title>
+
+  
+  <meta name="author" content="John Doe">
+  
+
+  
+  <meta name="description" content="Mockito 可能是我用过最好的单元测试工具了，公司在我的推荐下已经将它采用成为编写测试的标准件。Mockito 不仅仅能大大的提高编写单元测试的生产效率，而且其优美的语法使得编写和阅读测试代码变得十分容易了。
+在书写单元测试代码时，一般需要分离模块之间的依赖性，比如我们要测试A模块，但A模块运行">
+  
+
+  
+  
+  <meta name="keywords" content="">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Mockito"/>
+
+  <meta property="og:site_name" content="Hexo"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Hexo</a>
+    </h1>
+    <p class="site-description"></p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">Home</a></li>
+      
+        <li><a href="/archives">Archives</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>Mockito</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2015/04/04/2015-04-04-mockito/" rel="bookmark">
+        <time class="entry-date published" datetime="2015-04-04T19:00:00.000Z">
+          2015-04-04
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>Mockito 可能是我用过最好的单元测试工具了，公司在我的推荐下已经将它采用成为编写测试的标准件。Mockito 不仅仅能大大的提高编写单元测试的生产效率，而且其优美的语法使得编写和阅读测试代码变得十分容易了。</p>
+<p>在书写单元测试代码时，一般需要分离模块之间的依赖性，比如我们要测试A模块，但A模块运行中又有调用B模块中某些功能，那么在做单元测试时我们就需要模拟B模块，假设B运行正常，才能不受影响的测试A。写单元测试代码时最麻烦的就是模拟B模块的行为，看看 Mockito 是如何优雅的解决这个问题的吧。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> <span class="keyword">static</span> org.mockito.Mockito.*;</div><div class="line"></div><div class="line"><span class="meta">@RunWith</span>(MockitoJUnitRunner.class)</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ServiceTestCase</span> </span>&#123;</div><div class="line">  <span class="meta">@Mock</span></div><div class="line">  <span class="keyword">private</span> SpringDataRepository repository;</div><div class="line">  <span class="meta">@InjectMocks</span></div><div class="line">  <span class="keyword">private</span> Service service;</div><div class="line"></div><div class="line">  <span class="meta">@Test</span></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">    JPAEntity e = <span class="keyword">new</span> JPAEntity();</div><div class="line">    when(repository.findOne(anyLong()).thenReturn(e);</div><div class="line"></div><div class="line">    ReturnValue rv = service.method();</div><div class="line">    Assert.assertEquals(State.STATE_GOOD, rv.getState());</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在上面的示例中 Service 运行需要调用 SpringDataRepository，SpingDataRepositoy 是用 @Autowired 直接注入到 Service 中。在测试 Service 时，我们使用 Mockito 来模拟 SpringDataRepository 的行为，这样 Service 的单元测试就不会受到数据库中数据的影响而失败。这个小示例中的亮点就在下面一行模拟 Repository 行为的代码上，就一行简简单单，用近似书面化的语言描写模拟行为和预设结果。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">when(repository.findOne(anyLong()).thenReturn(e);</div></pre></td></tr></table></figure>
+<p>当然 Mockito 的优雅的语法不仅表现在模拟被调用的模块，而且在编写被测试模块是否正常运行的代码上也有出色之处。在上面列子中我们仅仅测试了 Service 中 method 函数的返回值，如果我们想保证 Service 在运行中调用过且仅调用过一次 Repository 的话，我们可以这样写：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">verify(repository, times(<span class="number">1</span>)).findOne(anyLong());</div></pre></td></tr></table></figure>
+<p>或者保证 Service 没有调用过 Repository#findOne() ：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">verify(repository, never()).findOne(anyLong());</div></pre></td></tr></table></figure>
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+  
+
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 John Doe
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

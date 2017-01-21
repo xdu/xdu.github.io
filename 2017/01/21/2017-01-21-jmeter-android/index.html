@@ -1,0 +1,136 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>追踪手机app的网路请求 | Hexo</title>
+
+  
+  <meta name="author" content="John Doe">
+  
+
+  
+  <meta name="description" content="金融时报（FT）中文版app有一个非常有意思的功能，就是可以用双语显示同一篇报道。这个功能却不能在网页版中使用，我就很好奇，这个手机的app向服务器发出什么样的请求，能够获得双语的内容。
+为了截获app的请求，我使用了jMeter（http://jmeter.apache.org）。打开jMeter">
+  
+
+  
+  
+  <meta name="keywords" content="">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="追踪手机app的网路请求"/>
+
+  <meta property="og:site_name" content="Hexo"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Hexo</a>
+    </h1>
+    <p class="site-description"></p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">Home</a></li>
+      
+        <li><a href="/archives">Archives</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>追踪手机app的网路请求</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2017/01/21/2017-01-21-jmeter-android/" rel="bookmark">
+        <time class="entry-date published" datetime="2017-01-21T20:00:00.000Z">
+          2017-01-21
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>金融时报（FT）中文版app有一个非常有意思的功能，就是可以用双语显示同一篇报道。这个功能却不能在网页版中使用，我就很好奇，这个手机的app向服务器发出什么样的请求，能够获得双语的内容。</p>
+<p>为了截获app的请求，我使用了jMeter（<a href="http://jmeter.apache.org" target="_blank" rel="external">http://jmeter.apache.org</a>）。打开jMeter，创建一个新项目，然后在WorkBench中添加以下的模块：</p>
+<ul>
+<li>HTTP(S) Test Script Recorder</li>
+<li>Recording Controller</li>
+<li>View Results Tree</li>
+</ul>
+<p>点击Recorder页面下的Start按钮，jMeter就创建一个监听8888端口的代理服务器；所有通过该代理的请求，以及服务器的应答都会被记录下来，下面要做的就是让手机使用这个代理，这样app做的网路请求就可以一览无遗了。</p>
+<p>我使用Android手机，使用代理的方法如下：设定 -&gt; Wi-Fi -&gt; 选择当前使用的无线网路 -&gt; Proxy (手动），在主机名称里输入jMeter运行的那台电脑的IP地址，比如说：192.168.0.3，端口输入填写8888，点击确定以使设置生效。</p>
+<p>现在当手机运行“FT中文网”应用程序时，程序所做的网页请求就记录在jMeter里View Results Tree页面下。一个一个仔细分析后，就会发现应用程序请求了一个<a href="http://app003.ftmailbox.com/androidapp.html" target="_blank" rel="external">http://app003.ftmailbox.com/androidapp.html</a>的网页。使用chrome打开这个网页，原来它就是“FT中文网”的入口，通过这个入口打开的报道都是用双语显示的。</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+  
+
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 John Doe
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

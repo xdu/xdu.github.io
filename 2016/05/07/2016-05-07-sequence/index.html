@@ -1,0 +1,133 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>JPA 中使用 Max+1 模拟序列 | Hexo</title>
+
+  
+  <meta name="author" content="John Doe">
+  
+
+  
+  <meta name="description" content="前段时间公司开发项目中要用到一个很古旧的数据库，数据库虽是建在 Oracle 之上，但所有的表（Table）都没有序列（Sequence），要建立新记录时，就呼叫Select max(id)+1 from table来取得记录号。新的应用使用 JPA 来访问数据库，当然不支持这种怪怪的生成序列的办法">
+  
+
+  
+  
+  <meta name="keywords" content="">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="JPA 中使用 Max+1 模拟序列"/>
+
+  <meta property="og:site_name" content="Hexo"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Hexo</a>
+    </h1>
+    <p class="site-description"></p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">Home</a></li>
+      
+        <li><a href="/archives">Archives</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>JPA 中使用 Max+1 模拟序列</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2016/05/07/2016-05-07-sequence/" rel="bookmark">
+        <time class="entry-date published" datetime="2016-05-07T19:00:00.000Z">
+          2016-05-07
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>前段时间公司开发项目中要用到一个很古旧的数据库，数据库虽是建在 Oracle 之上，但所有的表（Table）都没有序列（Sequence），要建立新记录时，就呼叫Select max(id)+1 from table来取得记录号。新的应用使用 JPA 来访问数据库，当然不支持这种怪怪的生成序列的办法；而且由于有一个和数据库一样古旧的应用程序，至今依然使用这种方法取得序列号，导致我们不能创建一个真正的 Oracle 序列给 JPA 使用。</p>
+<p>我们使用的办法是在 Eclipselink 中模拟一个序列，具体实现方法如下。在 JPA Entity 的记录号（ID Column）上，我们仍旧指定使用序列来取得新的记录号，但是 strategy 需要用 GenerationType.TABLE。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@GeneratedValue</span>(strategy = GenerationType.TABLE, generator = <span class="string">"SEQ_TABLE"</span>)</div><div class="line"><span class="meta">@SequenceGenerator</span>(name = <span class="string">"SEQ_TABLE"</span>)</div><div class="line"><span class="meta">@Column</span>(name = <span class="string">"ID"</span>)</div><div class="line"><span class="keyword">private</span> Long id;</div></pre></td></tr></table></figure>
+<p>在建立新记录的时候，Eclipselink 会到数据库中去找一个叫 SEQ_TABLE 的序列，当然这个序列并不实际存在，JPA 就会报错。那么第二步就是要写一个 Session Customizer 来告诉 Eclipelink 如何用这个模拟序列。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SequenceSessionCustomizer</span> <span class="keyword">implements</span> <span class="title">SessionCustomizer</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">customize</span><span class="params">(Session session)</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">        NativeSequence sequence = <span class="keyword">new</span> LegacyMultiThreadMaxPlusOneSequence(<span class="string">"SEQ_IDETCIV"</span>);</div><div class="line">        sequence.setSelectQuery(<span class="keyword">new</span> ValueReadQuery(<span class="string">"select nvl(max(ID),0) from TABLE"</span>));</div><div class="line">        session.getPlatform().addSequence(sequence);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>下面是 LegacyMultiThreadMaxPlusOneSequence 的实现代码。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LegacyMultiThreadMaxPlusOneSequence</span> <span class="keyword">extends</span> <span class="title">NativeSequence</span> </span>&#123;</div><div class="line">  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1229184136706318906L</span>;</div><div class="line">  <span class="keyword">private</span> <span class="keyword">int</span> incr = <span class="number">0</span>;</div><div class="line">  <span class="keyword">private</span> <span class="keyword">int</span> lastvalue = <span class="number">0</span>;</div><div class="line">  </div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="title">LegacyMultiThreadMaxPlusOneSequence</span><span class="params">(String string)</span> </span>&#123;</div><div class="line">      <span class="keyword">super</span>(string, <span class="number">1</span>);</div><div class="line">      shouldSkipUpdate = <span class="keyword">true</span>;</div><div class="line">      shouldSelectBeforeUpdate = <span class="keyword">false</span>;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="meta">@Override</span></div><div class="line">  <span class="function"><span class="keyword">protected</span> <span class="keyword">synchronized</span> Object <span class="title">select</span><span class="params">(Accessor accessor,</span></span></div><div class="line">        AbstractSession writeSession, String seqName, Integer size) &#123;</div><div class="line">    Number n =  (Number) <span class="keyword">super</span>.select(accessor, writeSession, seqName, size);</div><div class="line">    <span class="keyword">if</span> (n.intValue() &gt; lastvalue + incr) &#123;</div><div class="line">        incr = <span class="number">1</span>;</div><div class="line">        lastvalue = n.intValue();</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        incr ++;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">new</span> Long(lastvalue + incr);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="meta">@Override</span></div><div class="line">  <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">update</span><span class="params">(Accessor accessor, AbstractSession writeSession, </span></span></div><div class="line">        String seqName, Number sizeOrNewValue) &#123;&#125;</div><div class="line">    </div><div class="line">  <span class="meta">@Override</span></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setShouldAcquireValueAfterInsert</span><span class="params">(<span class="keyword">boolean</span> b)</span> </span>&#123;&#125;</div><div class="line">  </div><div class="line">  <span class="meta">@Override</span></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setShouldSelectBeforeUpdate</span><span class="params">(<span class="keyword">boolean</span> b)</span> </span>&#123;&#125;</div><div class="line">  </div><div class="line">  <span class="meta">@Override</span></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setShouldSkipUpdate</span><span class="params">(<span class="keyword">boolean</span> b)</span> </span>&#123;&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>最后一步就是修改 persistence.xml 告诉 Eclipselink 使用我们编写的 Session Customizer。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">persistence</span> <span class="attr">xmlns</span>=<span class="string">"http://java.sun.com/xml/ns/persistence"</span></span></div><div class="line">  <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></div><div class="line">  <span class="attr">xsi:schemaLocation</span>=<span class="string">"http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd"</span></div><div class="line">  <span class="attr">version</span>=<span class="string">"1.0"</span>&gt;</div><div class="line"></div><div class="line">  <span class="tag">&lt;<span class="name">persistence-unit</span> <span class="attr">name</span>=<span class="string">"acme"</span> <span class="attr">transaction-type</span>=<span class="string">"RESOURCE_LOCAL"</span>&gt;</span></div><div class="line">      <span class="tag">&lt;<span class="name">properties</span>&gt;</span></div><div class="line">      <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"eclipselink.target-database"</span> <span class="attr">value</span>=<span class="string">"Oracle"</span> /&gt;</span></div><div class="line">      <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"eclipselink.session.customizer"</span></span></div><div class="line">        <span class="attr">value</span>=<span class="string">"com.example.persist.SequenceSessionCustomizer"</span> /&gt;</div><div class="line">      <span class="tag">&lt;/<span class="name">properties</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">persistence-unit</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">persistence</span>&gt;</span></div></pre></td></tr></table></figure>
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+  
+
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 John Doe
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>
