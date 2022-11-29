@@ -18,7 +18,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"xdu.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.12.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"xdu.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.12.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
 
     <meta name="description" content="德国之音整理的2021大事记  特朗普拥护者在1月6日这一天冲击了国会大厦，袭击了美国民主的心脏。这是该国历史上前所未有的黑暗篇章 78岁的拜登宣誓就任美国第46任总统——同时也成为有史以来就任时年龄最大的一位 巨大的长赐号集装箱货轮横在苏伊士运河中间，导致这条世界上最重要的水上货运动脉之一堵塞长达6天 在7月1日中国共产党庆祝百年诞辰 迟到一年的奥运, 在观众席空着的情况下在东京开幕 洪水肆虐德">
 <meta property="og:type" content="article">
@@ -43,9 +43,6 @@
 <script class="next-config" data-name="calendar" type="application/json">""</script>
 <title>2021大事记 | 发现有趣的事</title>
   
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-241971919-1"></script>
-  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"UA-241971919-1","only_pageview":false}</script>
-  <script src="/js/third-party/analytics/google-analytics.js"></script>
 
 
 
@@ -125,12 +122,12 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-count">27</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">14</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
@@ -202,6 +199,13 @@
     </span>
 
   
+    <span class="post-meta-item" title="阅读次数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span class="firestore-visitors-count"></span>
+    </span>
 </div>
 
         </div>
@@ -256,6 +260,7 @@
 
 
 
+    <div class="comments utterances-container"></div>
 </div>
   </main>
 
@@ -289,9 +294,15 @@
 
   
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.8.2/firebase-app-compat.js" integrity="sha256-ETbC+kCMIUue1LpQ/nOsZCZMK8vqXJemdx/M8WRd8uk=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.8.2/firebase-firestore-compat.js" integrity="sha256-2VCCncnPAuPgE4GESOUOwBXepYclyBn6yVAffkvS+4Y=" crossorigin="anonymous"></script>
+  <script class="next-config" data-name="firestore" type="application/json">{"enable":true,"collection":"articles","apiKey":"AIzaSyAyHmKllQAhx5Al2h4aWm4SzGk7bnvzcPo","projectId":"hexo-pages"}</script>
+  <script src="/js/third-party/statistics/firestore.js"></script>
 
 
 
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xdu/xdu.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
 
 </body>
 </html>

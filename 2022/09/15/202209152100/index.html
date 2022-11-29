@@ -18,7 +18,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"xdu.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.12.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"xdu.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.12.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
 
     <meta name="description" content="这两天在看一本挺有意思的书《30天自制操作系统》，作者是一位日本程序设计师，川合秀实（Hidemi Kawai）。书不是很新了，中文版都出了10年。书里行文十分风趣，边做边玩，抛开晦涩难懂的语言，从零编写所有代码，30天后就可以制作出一个具有窗口系统的32位多任务操作系统。 书中第四章标题为：无知则无畏；书中还写道：就算知道一大堆专业术语、专业理论，又有什么意思呢？还不如动手去做，就算做出来的东西">
 <meta property="og:type" content="article">
@@ -44,9 +44,6 @@
 <script class="next-config" data-name="calendar" type="application/json">""</script>
 <title>操作系统引导程序 | 发现有趣的事</title>
   
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-241971919-1"></script>
-  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"UA-241971919-1","only_pageview":false}</script>
-  <script src="/js/third-party/analytics/google-analytics.js"></script>
 
 
 
@@ -126,12 +123,12 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-count">27</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">14</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
@@ -203,6 +200,13 @@
     </span>
 
   
+    <span class="post-meta-item" title="阅读次数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span class="firestore-visitors-count"></span>
+    </span>
 </div>
 
         </div>
@@ -244,6 +248,9 @@
                 </a>
             </div>
             <div class="post-nav-item">
+                <a href="/2022/09/18/202209182100/" rel="next" title="中国政治海报">
+                  中国政治海报 <i class="fa fa-chevron-right"></i>
+                </a>
             </div>
           </div>
     </footer>
@@ -255,6 +262,7 @@
 
 
 
+    <div class="comments utterances-container"></div>
 </div>
   </main>
 
@@ -288,9 +296,15 @@
 
   
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.8.2/firebase-app-compat.js" integrity="sha256-ETbC+kCMIUue1LpQ/nOsZCZMK8vqXJemdx/M8WRd8uk=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.8.2/firebase-firestore-compat.js" integrity="sha256-2VCCncnPAuPgE4GESOUOwBXepYclyBn6yVAffkvS+4Y=" crossorigin="anonymous"></script>
+  <script class="next-config" data-name="firestore" type="application/json">{"enable":true,"collection":"articles","apiKey":"AIzaSyAyHmKllQAhx5Al2h4aWm4SzGk7bnvzcPo","projectId":"hexo-pages"}</script>
+  <script src="/js/third-party/statistics/firestore.js"></script>
 
 
 
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"xdu/xdu.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
 
 </body>
 </html>
